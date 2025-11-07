@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+  booking-db:
+    image: postgres:16
+    container_name: booking-db
+    environment:
+      POSTGRES_DB: booking_db
+      POSTGRES_USER: booking_user
+      POSTGRES_PASSWORD: booking_pass
+      TZ: Asia/Kolkata
+      PGTZ: Asia/Kolkata
+    ports:
+      - "5433:5432"
+    networks:
+      - movie-net
+    volumes:
+      - booking_data:/var/lib/postgresql/data
+
+  movie-db:
+    image: postgres:16
+    container_name: movie-db
+    environment:
+      POSTGRES_DB: movie_db
+      POSTGRES_USER: movie_user
+      POSTGRES_PASSWORD: movie_pass
+      TZ: Asia/Kolkata
+      PGTZ: Asia/Kolkata
+    ports:
+      - "5434:5432"
+    networks:
+      - movie-net
+    volumes:
+      - movie_data:/var/lib/postgresql/data
+
+  user-db:
+    image: postgres:16
+    container_name: user-db
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_user
+      POSTGRES_PASSWORD: user_pass
+      TZ: Asia/Kolkata
+      PGTZ: Asia/Kolkata
+    ports:
+      - "5435:5432"
+    networks:
+      - movie-net
+    volumes:
+      - user_data:/var/lib/postgresql/data
+
+networks:
+  movie-net:
+    driver: bridge
+
+volumes:
+  booking_data:
+  movie_data:
+  user_data:
