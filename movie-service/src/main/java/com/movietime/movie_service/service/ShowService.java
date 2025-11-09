@@ -9,4 +9,5 @@ public interface ShowService {
     ShowDTO get(Long id);
     List<ShowDTO> listByDate(LocalDate date);
     List<SeatDTO> seatLayoutForShow(Long showId);
+    List<ShowDTO> listAll();
 }

@@ -1,7 +1,14 @@
 package com.movietime.movie_service.dto;
 
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MovieDTO {
     public Long id;
     public String title;
@@ -13,6 +20,4 @@ public class MovieDTO {
     public LocalDate releaseDate;
     public boolean active;
 
-    public MovieDTO(Long id, String title, String description, String language, Integer duration, String genre, String posterUrl, LocalDate releaseDate, boolean active) {
-    }
 }

@@ -32,7 +32,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie create(CreateMovieRequest r) {
+    public MovieDTO create(CreateMovieRequest r) {
         Movie m = Movie.builder()
                 .title(r.title).description(r.description)
                 .language(r.language).duration(r.duration)
@@ -42,7 +42,7 @@ public class MovieServiceImpl implements MovieService {
                 .build();
         System.out.println("Saving movie: " + m.getTitle());
         // persist and return the saved entity so id and timestamps are generated
-        return movies.save(m);
+        return toDto(movies.save(m));
     }
 
     @Override

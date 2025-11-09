@@ -22,11 +22,7 @@ public class MovieController {
     public MovieDTO get(@PathVariable Long id) { return service.get(id); }
 
     @PostMapping
-    public Movie create(@Valid @RequestBody CreateMovieRequest req) {
-        System.out.println("Creating movie: " + req.title);
-        System.out.println("Description: " + req.description);
-//        System.out.println();
-
+    public MovieDTO create(@Valid @RequestBody CreateMovieRequest req) {
         return service.create(req); }
 
     @PutMapping("/{id}")

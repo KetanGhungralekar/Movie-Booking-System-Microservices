@@ -22,15 +22,15 @@ public class ShowServiceImpl implements ShowService {
 
     @Override
     public ShowDTO create(CreateShowRequest r) {
-        Movie movie = movies.findById(r.movieId)
-                .orElseThrow(() -> new NotFoundException("Movie not found: " + r.movieId));
+        Movie movie = movies.findById(r.movieId())
+                .orElseThrow(() -> new NotFoundException("Movie not found: " + r.movieId()));
         Show s = Show.builder()
                 .movie(movie)
-                .startTime(r.startTime)
-                .endTime(r.endTime)
-                .auditorium(r.auditorium == null ? "AUD-1" : r.auditorium)
-                .priceRegular(r.priceRegular)
-                .pricePremium(r.pricePremium)
+                .startTime(r.startTime())
+                .endTime(r.endTime())
+                .auditorium(r.auditorium() == null ? "AUD-1" : r.auditorium())
+                .priceRegular(r.priceRegular())
+                .pricePremium(r.pricePremium())
                 .build();
         return toDto(shows.save(s));
     }
@@ -62,4 +62,12 @@ public class ShowServiceImpl implements ShowService {
                 s.getStartTime(), s.getEndTime(), s.getAuditorium(),
                 s.getPriceRegular(), s.getPricePremium());
     }
+
+    @Override
+    public List<ShowDTO> listAll() {
+        return shows.findAll().stream()
+                .map(this::toDto)
+                .toList();
+    }
+
 }

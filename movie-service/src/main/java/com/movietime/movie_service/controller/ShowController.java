@@ -20,7 +20,12 @@ public class ShowController {
     public ShowDTO get(@PathVariable Long id) { return service.get(id); }
 
     @GetMapping
-    public List<ShowDTO> byDate(@RequestParam LocalDate date) { return service.listByDate(date); }
+    public List<ShowDTO> getShows(@RequestParam(required = false) LocalDate date) {
+        if (date != null) {
+            return service.listByDate(date);
+        }
+        return service.listAll();  // when date is not provided
+    }
 
     @GetMapping("/{id}/seats")
     public List<SeatDTO> seatLayout(@PathVariable Long id) { return service.seatLayoutForShow(id); }
@@ -28,6 +33,6 @@ public class ShowController {
     @GetMapping("/{id}/pricing")
     public Object pricing(@PathVariable Long id) {
         var s = service.get(id);
-        return java.util.Map.of("priceRegular", s.priceRegular, "pricePremium", s.pricePremium);
+        return java.util.Map.of("priceRegular", s.priceRegular(), "pricePremium", s.pricePremium());
     }
 }

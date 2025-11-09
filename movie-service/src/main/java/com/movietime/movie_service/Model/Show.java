@@ -2,6 +2,9 @@ package com.movietime.movie_service.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.*;
 
 @Entity
@@ -12,7 +15,8 @@ public class Show {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id")
+    @JoinColumn(name = "movie_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Movie movie;
 
     private LocalDateTime startTime;
