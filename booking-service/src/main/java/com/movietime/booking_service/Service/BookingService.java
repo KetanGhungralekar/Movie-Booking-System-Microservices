@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import com.movietime.booking_service.Model.BookingStatus;
 import com.movietime.booking_service.Repository.BookedSeatRepository;
 import com.movietime.booking_service.Repository.BookingRepository;
 import com.movietime.booking_service.Repository.BookingSeatRepository;
+import com.movietime.booking_service.Response.BookingResponse;
+import com.movietime.booking_service.Response.BookingResponseDTO;
 import com.movietime.booking_service.Response.SeatStatusResponse;
 
 import jakarta.transaction.Transactional;
@@ -35,21 +38,27 @@ public class BookingService {
 
     private static final long LOCK_TTL = 600; // seconds
 
-    public Booking createBooking(CreateBookingRequest req, String userId) {
+    @Transactional
+    public BookingResponse createBooking(CreateBookingRequest req, String userId) {
         Long showId = req.getShowId();
-        // 1️ Try locking each seat in Redis
+
+        // 1️⃣ Try locking each seat in Redis
         for (SeatSelection seat : req.getSeats()) {
             String key = "lock:show:" + showId + ":seat:" + seat.getSeatId();
             String value = seat.getRowLabel() + "-" + seat.getSeatNumber() + "-" + seat.getSeatType();
-            Boolean success = redisTemplate.opsForValue().setIfAbsent(key, value, LOCK_TTL, TimeUnit.SECONDS);
+
+            Boolean success = redisTemplate.opsForValue()
+                    .setIfAbsent(key, value, LOCK_TTL, TimeUnit.SECONDS);
+
             if (Boolean.FALSE.equals(success)) {
                 throw new IllegalStateException("Seat already locked or booked: " + seat.getSeatId());
             }
         }
-        // 2️ Create Booking record
+
+        // 2️⃣ Create Booking record
         Booking booking = Booking.builder()
                 .showId(showId)
-                .userId(userId)
+                .userId(userId) // Long type now
                 .status(BookingStatus.PENDING_PAYMENT)
                 .totalAmount(req.getTotalAmount())
                 .currency("INR")
@@ -67,12 +76,25 @@ public class BookingService {
                     .seatType(seat.getSeatType())
                     .price(seat.getPrice())
                     .build();
+
             bookingSeatRepository.save(seatEntity);
         }
-        return booking;
+
+        return BookingResponse.builder()
+            .id(booking.getId())
+            .showId(booking.getShowId())
+            .userId(booking.getUserId())
+            .status(booking.getStatus())
+            .totalAmount(booking.getTotalAmount())
+            .currency(booking.getCurrency())
+            .paymentId(booking.getPaymentId())
+            .lockId(booking.getLockId())
+            .createdAt(booking.getCreatedAt())
+            .updatedAt(booking.getUpdatedAt())
+            .build();
     }
     @Transactional
-    public Booking confirmPayment(Long bookingId, String paymentId) {
+    public BookingResponse confirmPayment(Long bookingId, String paymentId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
@@ -105,7 +127,18 @@ public class BookingService {
             redisTemplate.delete(key);
         }
 
-        return booking;
+        return BookingResponse.builder()
+            .id(booking.getId())
+            .showId(booking.getShowId())
+            .userId(booking.getUserId())
+            .status(booking.getStatus())
+            .totalAmount(booking.getTotalAmount())
+            .currency(booking.getCurrency())
+            .paymentId(booking.getPaymentId())
+            .lockId(booking.getLockId())
+            .createdAt(booking.getCreatedAt())
+            .updatedAt(booking.getUpdatedAt())
+            .build();
     }
 
     public List<Long> getBookedSeats(Long showId) {
@@ -133,6 +166,28 @@ public class BookingService {
         }
 
         return new SeatStatusResponse(bookedSeatIds, lockedSeatIds);
+    }
+     public List<BookingResponseDTO> getBookingsByUserId(String userId) {
+        return bookingRepository.findByUserId(userId).stream().map(booking -> {
+            BookingResponseDTO dto = new BookingResponseDTO();
+            dto.setId(booking.getId());
+            dto.setUserId(booking.getUserId());
+            dto.setShowId(booking.getShowId());
+            dto.setStatus(booking.getStatus().toString());
+            dto.setTotalAmount(booking.getTotalAmount());
+            dto.setPaymentId(booking.getPaymentId());
+
+            dto.setSeats(
+                booking.getSeats().stream().map(seat -> {
+                    BookingResponseDTO.SeatDTO s = new BookingResponseDTO.SeatDTO();
+                    s.setSeatNumber(seat.getSeatNumber());
+                    s.setPrice(seat.getPrice());
+                    return s;
+                }).collect(Collectors.toList())
+            );
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
 

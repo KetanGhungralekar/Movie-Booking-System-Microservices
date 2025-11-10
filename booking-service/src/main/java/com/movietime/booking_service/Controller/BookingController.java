@@ -1,5 +1,7 @@
 package com.movietime.booking_service.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.movietime.booking_service.DTO.CreateBookingRequest;
 import com.movietime.booking_service.Model.Booking;
+import com.movietime.booking_service.Response.BookingResponse;
+import com.movietime.booking_service.Response.BookingResponseDTO;
 import com.movietime.booking_service.Response.SeatStatusResponse;
 import com.movietime.booking_service.Service.BookingService;
 
@@ -22,12 +26,12 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
     @PostMapping("/create")
-    public ResponseEntity<Booking> createBooking(@RequestHeader("X-User-Email") String userEmail,@RequestBody CreateBookingRequest req) {
-        Booking booking = bookingService.createBooking(req, userEmail);
+    public ResponseEntity<BookingResponse> createBooking(@RequestHeader("X-User-Email") String userEmail,@RequestBody CreateBookingRequest req) {
+        BookingResponse booking = bookingService.createBooking(req, userEmail);
         return ResponseEntity.ok(booking);
     }
     @PostMapping("/confirm/{bookingId}")
-    public ResponseEntity<Booking> confirmBooking(
+    public ResponseEntity<BookingResponse> confirmBooking(
             @PathVariable Long bookingId,
             @RequestParam String paymentId) {
         return ResponseEntity.ok(bookingService.confirmPayment(bookingId, paymentId));
@@ -35,5 +39,11 @@ public class BookingController {
     @GetMapping("/show/{showId}/seats/status")
     public SeatStatusResponse getSeatStatus(@PathVariable Long showId) {
         return bookingService.getSeatStatus(showId);
+    }
+    @GetMapping("/my")
+    public ResponseEntity<List<BookingResponseDTO>> getBookingsByUserId(
+            @RequestHeader("X-User-Email") String userEmail) {
+        List<BookingResponseDTO> bookings = bookingService.getBookingsByUserId(userEmail);
+        return ResponseEntity.ok(bookings);
     }
 }
