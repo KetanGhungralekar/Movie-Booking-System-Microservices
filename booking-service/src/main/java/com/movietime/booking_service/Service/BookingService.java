@@ -212,7 +212,7 @@ public class BookingService {
         }
     }
     @Transactional
-    public Booking cancelBooking(Long bookingId, String userId) {
+    public BookingResponse cancelBooking(Long bookingId, String userId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
@@ -233,7 +233,18 @@ public class BookingService {
             String key = "lock:show:" + booking.getShowId() + ":seat:" + seat.getSeatId();
             redisTemplate.delete(key);
         }
-        return booking;
+        return BookingResponse.builder()
+            .id(booking.getId())
+            .showId(booking.getShowId())
+            .userId(booking.getUserId())
+            .status(booking.getStatus())
+            .totalAmount(booking.getTotalAmount())
+            .currency(booking.getCurrency())
+            .paymentId(booking.getPaymentId())
+            .lockId(booking.getLockId())
+            .createdAt(booking.getCreatedAt())
+            .updatedAt(booking.getUpdatedAt())
+            .build();
     }
 }
 
