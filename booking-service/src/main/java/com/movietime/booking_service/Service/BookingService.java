@@ -211,5 +211,29 @@ public class BookingService {
             }
         }
     }
+    @Transactional
+    public Booking cancelBooking(Long bookingId, String userId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+
+        if (!booking.getUserId().equals(userId)) {
+            throw new IllegalStateException("You are not authorized to cancel this booking");
+        }
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new IllegalStateException("Booking is already cancelled");
+        }
+
+        // 1️⃣ Update status
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+
+        // 2️⃣ Release locked seats from Redis
+        for (BookingSeat seat : booking.getSeats()) {
+            String key = "lock:show:" + booking.getShowId() + ":seat:" + seat.getSeatId();
+            redisTemplate.delete(key);
+        }
+        return booking;
+    }
 }
 
