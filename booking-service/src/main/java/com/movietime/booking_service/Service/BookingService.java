@@ -11,7 +11,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.movietime.booking_service.Config.RabbitMQConfig;
 import com.movietime.booking_service.DTO.CreateBookingRequest;
 import com.movietime.booking_service.DTO.SeatSelection;
+import com.movietime.booking_service.Event.PaymentSuccessEvent;
 import com.movietime.booking_service.Model.BookedSeat;
 import com.movietime.booking_service.Model.Booking;
 import com.movietime.booking_service.Model.BookingSeat;
@@ -120,14 +123,18 @@ public class BookingService {
 
         for (BookingSeat seat : seats) {
             // Save into booked_seats table (ensures seat uniqueness per show)
-            bookedSeatRepository.save(
+            try {
+                bookedSeatRepository.save(
                     BookedSeat.builder()
                             .showId(booking.getShowId())
                             .seatId(seat.getSeatId())
                             .bookingId(booking.getId())
                             .bookedAt(Instant.now())
                             .build()
-            );
+                );
+            } catch (DataIntegrityViolationException e) {
+                throw new IllegalStateException("Seat already booked by another user");
+            }
 
             // Remove Redis lock if present
             String key = "lock:show:" + booking.getShowId() + ":seat:" + seat.getSeatId();
@@ -265,6 +272,11 @@ public class BookingService {
         );
 
         System.out.println("Published booking confirmation event for: " + booking.getId());
+    }
+    @RabbitListener(queues = "payment.success.queue")
+    public void handlePaymentEvent(PaymentSuccessEvent event) {
+        System.out.println("Received Payment Success Event for Booking ID: " + event.getPaymentId());
+        confirmPayment(event.getBookingId(), event.getPaymentId());
     }
 }
 
