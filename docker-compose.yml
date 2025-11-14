@@ -76,6 +76,72 @@ services:
     networks:
       - movie-net
 
+  # eureka:
+  #   build: ./eureka_server
+  #   container_name: eureka
+  #   ports:
+  #     - "8761:8761"
+  #   depends_on:
+  #     - rabbitmq
+  #   networks:
+  #     - movie-net
+
+  # api_gateway:
+  #   build: ./api_gateway
+  #   container_name: api_gateway
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - eureka
+  #   networks:
+  #     - movie-net
+  
+  # booking_service:
+  #   build: ./booking_service
+  #   container_name: booking_service
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - rabbitmq
+  #     - redis
+  #     - postgres_booking
+  #     - eureka
+  #   networks:
+  #     - movie-net
+  
+  # payment_service:
+  #   build: ./payment_service
+  #   container_name: payment_service
+  #   ports:
+  #     - "8082:8082"
+  #   depends_on:
+  #     - rabbitmq
+  #     - eureka
+  #   networks:
+  #     - movie-net
+    
+  # movie_service:
+  #   build: ./movie_service
+  #   container_name: movie_service
+  #   ports:
+  #     - "8083:8083"
+  #   depends_on:
+  #     - postgres_movie
+  #     - eureka
+  #   networks:
+  #     - movie-net
+
+  # notification_service:
+  #   build: ./notification_service
+  #   container_name: notification_service
+  #   ports:
+  #     - "8084:8084"
+  #   depends_on:
+  #     - rabbitmq
+  #     - eureka
+  #   networks:
+  #     - movie-net
+
 networks:
   movie-net:
     driver: bridge
