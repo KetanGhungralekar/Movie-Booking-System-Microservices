@@ -36,7 +36,7 @@ public class MovieServiceImpl implements MovieService {
         Movie m = Movie.builder()
                 .title(r.title).description(r.description)
                 .language(r.language).duration(r.duration)
-                .genre(r.genre).posterUrl(r.posterUrl)
+                .genre(r.genre).rating(r.rating).posterUrl(r.posterUrl)
                 .releaseDate(r.releaseDate)
                 .active(r.active == null ? true : r.active)
                 .build();
@@ -54,6 +54,7 @@ public class MovieServiceImpl implements MovieService {
         if (r.language != null) m.setLanguage(r.language);
         if (r.duration != null) m.setDuration(r.duration);
         if (r.genre != null) m.setGenre(r.genre);
+        if (r.rating != null) m.setRating(r.rating);
         if (r.posterUrl != null) m.setPosterUrl(r.posterUrl);
         if (r.releaseDate != null) m.setReleaseDate(r.releaseDate);
         if (r.active != null) m.setActive(r.active);
@@ -70,7 +71,7 @@ public class MovieServiceImpl implements MovieService {
 
     private MovieDTO toDto(Movie m) {
         return new MovieDTO(m.getId(), m.getTitle(), m.getDescription(),
-                m.getLanguage(), m.getDuration(), m.getGenre(),
+                m.getLanguage(), m.getDuration(), m.getGenre(), m.getRating(),
                 m.getPosterUrl(), m.getReleaseDate(), m.isActive());
     }
 

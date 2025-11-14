@@ -70,4 +70,13 @@ public class ShowServiceImpl implements ShowService {
                 .toList();
     }
 
+    @Override
+    public void delete(Long id) {
+        if (!shows.existsById(id)) {
+            throw new NotFoundException("Show not found: " + id);
+        }
+        shows.deleteById(id);
+    }
+
+
 }

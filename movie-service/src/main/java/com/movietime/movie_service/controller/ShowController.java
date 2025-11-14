@@ -35,4 +35,10 @@ public class ShowController {
         var s = service.get(id);
         return java.util.Map.of("priceRegular", s.priceRegular(), "pricePremium", s.pricePremium());
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
+    }
+
 }

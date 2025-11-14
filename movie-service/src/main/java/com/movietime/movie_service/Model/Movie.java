@@ -6,17 +6,29 @@ import java.time.*;
 
 @Entity
 @Table(name = "movies")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Movie {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false) private String title;
-    @Column(length = 2000) private String description;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(length = 2000)
+    private String description;
+
     private String language;
-    private Integer duration;
+    private String duration;
     private String genre;
+    private String rating;
     private String posterUrl;
     private LocalDate releaseDate;
+
+    @Builder.Default
     private boolean active = true;
 
     @Column(nullable = false, updatable = false)
@@ -33,5 +45,7 @@ public class Movie {
     }
 
     @PreUpdate
-    protected void onUpdate() { this.updatedAt = Instant.now(); }
+    protected void onUpdate() {
+        this.updatedAt = Instant.now();
+    }
 }

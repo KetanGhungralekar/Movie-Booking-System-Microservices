@@ -6,12 +6,12 @@ spring:
     name: movie-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/moviesvc
-    username: moviesvc
-    password: moviesvc
+    url: jdbc:postgresql://localhost:5434/movie_db
+    username: movie_user
+    password: movie_pass
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

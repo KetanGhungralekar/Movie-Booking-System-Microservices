@@ -9,9 +9,13 @@ import java.time.*;
 
 @Entity
 @Table(name = "shows")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Show {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,10 +25,21 @@ public class Show {
 
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    @Builder.Default
     private String auditorium = "AUD-1";
+
     private Integer priceRegular;
     private Integer pricePremium;
+
+    @Builder.Default
     private Instant createdAt = Instant.now();
+
+    @Builder.Default
     private Instant updatedAt = Instant.now();
-    @PreUpdate void touch() { updatedAt = Instant.now(); }
+
+    @PreUpdate
+    void touch() {
+        updatedAt = Instant.now();
+    }
 }
