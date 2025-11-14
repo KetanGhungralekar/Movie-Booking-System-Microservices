@@ -1,7 +1,159 @@
+# version: '3.9'
+
+# services:
+#   # 🎬 Booking database
+#   booking-db:
+#     image: postgres:16
+#     container_name: booking-db
+#     environment:
+#       POSTGRES_DB: booking_db
+#       POSTGRES_USER: booking_user
+#       POSTGRES_PASSWORD: booking_pass
+#       TZ: Asia/Kolkata
+#       PGTZ: Asia/Kolkata
+#     ports:
+#       - "5433:5432"
+#     networks:
+#       - movie-net
+#     volumes:
+#       - booking_data:/var/lib/postgresql/data
+
+#   # 🍿 Movie database
+#   movie-db:
+#     image: postgres:16
+#     container_name: movie-db
+#     environment:
+#       POSTGRES_DB: movie_db
+#       POSTGRES_USER: movie_user
+#       POSTGRES_PASSWORD: movie_pass
+#       TZ: Asia/Kolkata
+#       PGTZ: Asia/Kolkata
+#     ports:
+#       - "5434:5432"
+#     networks:
+#       - movie-net
+#     volumes:
+#       - movie_data:/var/lib/postgresql/data
+
+#   # 👤 User database
+#   user-db:
+#     image: postgres:16
+#     container_name: user-db
+#     environment:
+#       POSTGRES_DB: user_db
+#       POSTGRES_USER: user_user
+#       POSTGRES_PASSWORD: user_pass
+#       TZ: Asia/Kolkata
+#       PGTZ: Asia/Kolkata
+#     ports:
+#       - "5435:5432"
+#     networks:
+#       - movie-net
+#     volumes:
+#       - user_data:/var/lib/postgresql/data
+
+#   redis:
+#     image: redis:7
+#     container_name: redis
+#     restart: always
+#     ports:
+#       - "6379:6379"
+#     networks:
+#       - movie-net
+#     command: ["redis-server", "--save", "", "--appendonly", "no"]
+
+#   # 📨 RabbitMQ for async notifications
+#   rabbitmq:
+#     image: rabbitmq:3-management
+#     container_name: rabbitmq
+#     restart: always
+#     ports:
+#       - "5672:5672"      # RabbitMQ broker
+#       - "15672:15672"    # Management UI
+#     environment:
+#       RABBITMQ_DEFAULT_USER: guest
+#       RABBITMQ_DEFAULT_PASS: guest
+#     networks:
+#       - movie-net
+
+#   eureka:
+#     build: ./eureka_server
+#     container_name: eureka
+#     ports:
+#       - "8761:8761"
+#     depends_on:
+#       - rabbitmq
+#     networks:
+#       - movie-net
+
+#   api_gateway:
+#     build: ./api_gateway
+#     container_name: api_gateway
+#     ports:
+#       - "8080:8080"
+#     depends_on:
+#       - eureka
+#     networks:
+#       - movie-net
+  
+#   booking_service:
+#     build: ./booking_service
+#     container_name: booking_service
+#     ports:
+#       - "8081:8081"
+#     depends_on:
+#       - rabbitmq
+#       - redis
+#       - postgres_booking
+#       - eureka
+#     networks:
+#       - movie-net
+  
+#   payment_service:
+#     build: ./payment_service
+#     container_name: payment_service
+#     ports:
+#       - "8082:8082"
+#     depends_on:
+#       - rabbitmq
+#       - eureka
+#     networks:
+#       - movie-net
+    
+#   movie_service:
+#     build: ./movie_service
+#     container_name: movie_service
+#     ports:
+#       - "8083:8083"
+#     depends_on:
+#       - postgres_movie
+#       - eureka
+#     networks:
+#       - movie-net
+
+#   notification_service:
+#     build: ./notification_service
+#     container_name: notification_service
+#     ports:
+#       - "8084:8084"
+#     depends_on:
+#       - rabbitmq
+#       - eureka
+#     networks:
+#       - movie-net
+
+# networks:
+#   movie-net:
+#     driver: bridge
+
+# volumes:
+#   booking_data:
+#   movie_data:
+#   user_data:
+
 version: '3.9'
 
 services:
-  # 🎬 Booking database
   booking-db:
     image: postgres:16
     container_name: booking-db
@@ -18,7 +170,6 @@ services:
     volumes:
       - booking_data:/var/lib/postgresql/data
 
-  # 🍿 Movie database
   movie-db:
     image: postgres:16
     container_name: movie-db
@@ -35,7 +186,6 @@ services:
     volumes:
       - movie_data:/var/lib/postgresql/data
 
-  # 👤 User database
   user-db:
     image: postgres:16
     container_name: user-db
@@ -62,85 +212,86 @@ services:
       - movie-net
     command: ["redis-server", "--save", "", "--appendonly", "no"]
 
-  # 📨 RabbitMQ for async notifications
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     restart: always
     ports:
-      - "5672:5672"      # RabbitMQ broker
-      - "15672:15672"    # Management UI
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - movie-net
 
-  # eureka:
-  #   build: ./eureka_server
-  #   container_name: eureka
-  #   ports:
-  #     - "8761:8761"
-  #   depends_on:
-  #     - rabbitmq
-  #   networks:
-  #     - movie-net
+  # ✔ discovery server (folder: discovery-server)
+  eureka:
+    build: ./discovery-server
+    container_name: eureka
+    hostname: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - movie-net
 
-  # api_gateway:
-  #   build: ./api_gateway
-  #   container_name: api_gateway
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - eureka
-  #   networks:
-  #     - movie-net
-  
-  # booking_service:
-  #   build: ./booking_service
-  #   container_name: booking_service
-  #   ports:
-  #     - "8081:8081"
-  #   depends_on:
-  #     - rabbitmq
-  #     - redis
-  #     - postgres_booking
-  #     - eureka
-  #   networks:
-  #     - movie-net
-  
-  # payment_service:
-  #   build: ./payment_service
-  #   container_name: payment_service
-  #   ports:
-  #     - "8082:8082"
-  #   depends_on:
-  #     - rabbitmq
-  #     - eureka
-  #   networks:
-  #     - movie-net
-    
-  # movie_service:
-  #   build: ./movie_service
-  #   container_name: movie_service
-  #   ports:
-  #     - "8083:8083"
-  #   depends_on:
-  #     - postgres_movie
-  #     - eureka
-  #   networks:
-  #     - movie-net
+  # ✔ API Gateway (folder: api-gateway)
+  api_gateway:
+    build: ./api-gateway
+    container_name: api_gateway
+    ports:
+      - "8085:8080"
+    depends_on:
+      - eureka
+    networks:
+      - movie-net
 
-  # notification_service:
-  #   build: ./notification_service
-  #   container_name: notification_service
-  #   ports:
-  #     - "8084:8084"
-  #   depends_on:
-  #     - rabbitmq
-  #     - eureka
-  #   networks:
-  #     - movie-net
+  # ✔ Booking service (folder: booking-service)
+  booking_service:
+    build: ./booking-service
+    container_name: booking_service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - booking-db
+      - rabbitmq
+      - redis
+      - eureka
+    networks:
+      - movie-net
+
+  # ✔ Payment service (folder: payment-service)
+  payment_service:
+    build: ./payment-service
+    container_name: payment_service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+      - eureka
+    networks:
+      - movie-net
+
+  # ✔ Movie service (folder: movie-service)
+  movie_service:
+    build: ./movie-service
+    container_name: movie_service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - movie-db
+      - eureka
+    networks:
+      - movie-net
+
+  # ✔ Notification service (folder: notification-service)
+  notification_service:
+    build: ./notification-service
+    container_name: notification_service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - rabbitmq
+      - eureka
+    networks:
+      - movie-net
 
 networks:
   movie-net:
@@ -150,3 +301,4 @@ volumes:
   booking_data:
   movie_data:
   user_data:
+
