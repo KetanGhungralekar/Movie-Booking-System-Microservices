@@ -24,11 +24,8 @@ public class ShowController {
         if (date != null) {
             return service.listByDate(date);
         }
-        return service.listAll();  // when date is not provided
+        return service.listAll();
     }
-
-    @GetMapping("/{id}/seats")
-    public List<SeatDTO> seatLayout(@PathVariable Long id) { return service.seatLayoutForShow(id); }
 
     @GetMapping("/{id}/pricing")
     public Object pricing(@PathVariable Long id) {

@@ -8,7 +8,6 @@ public interface ShowService {
     ShowDTO create(CreateShowRequest req);
     ShowDTO get(Long id);
     List<ShowDTO> listByDate(LocalDate date);
-    List<SeatDTO> seatLayoutForShow(Long showId);
     List<ShowDTO> listAll();
     void delete(Long id);
 
