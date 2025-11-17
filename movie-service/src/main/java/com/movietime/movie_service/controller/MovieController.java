@@ -43,7 +43,8 @@ public class MovieController {
 
     @GetMapping("/{id}/shows")
     public List<ShowDTO> showsForMovie(@PathVariable Long id) { return service.showsForMovie(id); }
-    @GetMapping("/shows/{showId}")
+
+    @GetMapping("/shows/{showId}/details")
     public ResponseEntity<ShowDetailsDTO> getShowDetails(@PathVariable Long showId) {
         Show show = showRepository.findById(showId)
                 .orElseThrow(() -> new RuntimeException("Show not found"));
