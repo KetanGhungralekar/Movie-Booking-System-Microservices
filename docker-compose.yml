@@ -283,7 +283,7 @@ services:
   # ✔ Movie service (folder: movie-service)
   movie_service:
     build: ./movie-service
-    container_name: movie_service
+    container_name: movie-service
     ports:
       - "8086:8086"
     depends_on:

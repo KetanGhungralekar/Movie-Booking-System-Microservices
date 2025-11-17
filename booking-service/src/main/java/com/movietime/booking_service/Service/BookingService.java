@@ -271,6 +271,7 @@ public class BookingService {
         payload.put("bookingId", booking.getId());
         payload.put("userEmail", booking.getUserId());
         payload.put("status", booking.getStatus().name());
+        payload.put("showId", booking.getShowId());
 
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.BOOKING_EXCHANGE,
