@@ -223,6 +223,7 @@ public class BookingService {
             }
         }
     }
+    
     @Transactional
     public BookingResponse cancelBooking(Long bookingId, String userId) {
         Booking booking = bookingRepository.findById(bookingId)
@@ -236,15 +237,20 @@ public class BookingService {
             throw new IllegalStateException("Booking is already cancelled");
         }
 
-        // 1️⃣ Update status
+        boolean wasConfirmed = booking.getStatus() == BookingStatus.CONFIRMED;
+
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
-        // 2️⃣ Release locked seats from Redis
         for (BookingSeat seat : booking.getSeats()) {
             String key = "lock:show:" + booking.getShowId() + ":seat:" + seat.getSeatId();
             redisTemplate.delete(key);
         }
+
+        if (wasConfirmed) {
+            bookedSeatRepository.deleteByBookingId(bookingId);
+        }
+
         return BookingResponse.builder()
             .id(booking.getId())
             .showId(booking.getShowId())
@@ -258,6 +264,7 @@ public class BookingService {
             .updatedAt(booking.getUpdatedAt())
             .build();
     }
+
 
     public void publishBookingConfirmed(Booking booking) {
         Map<String, Object> payload = new HashMap<>();
