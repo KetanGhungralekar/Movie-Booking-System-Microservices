@@ -33,7 +33,7 @@ public class BookingNotificationListener {
         System.out.println("📩 Received booking event bookingId=" + bookingId);
 
         // Build URL
-        String url = movieServiceUrl + "/movies/shows/" + showId;
+        String url = movieServiceUrl + "/movies/shows/" + showId + "/details";
         System.out.println("Calling movie-service at URL: " + url);
         // Call movie-service (this works perfectly in Docker)
         ShowDetailsDTO showDetails = restTemplate.getForObject(url, ShowDetailsDTO.class);
