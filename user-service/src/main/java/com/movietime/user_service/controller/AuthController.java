@@ -27,7 +27,6 @@ import com.movietime.user_service.Service.CustomUserDetailService;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*") // allow all frontends for now
 public class AuthController {
 
     @Autowired

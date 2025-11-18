@@ -24,14 +24,23 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String path = exchange.getRequest().getPath().value();
+        System.out.println("#### JWT FILTER LOADED NEW VERSION ####");
+        ServerHttpRequest request = exchange.getRequest();
+        String path = request.getURI().getPath();
 
-        // Allow auth endpoints to pass through (signup/signin handled by user-service)
-        if (path.startsWith("/auth/")) {
+        // 1. ALWAYS allow OPTIONS preflight requests
+        if (request.getMethod().name().equals("OPTIONS")) {
             return chain.filter(exchange);
         }
 
-        String authHeader = exchange.getRequest().getHeaders().getFirst(JwtConstant.JWT_HEADER);
+        // 2. Allow auth endpoints without JWT
+        if (path.startsWith("/auth/") || path.startsWith("/movies/")) {
+            return chain.filter(exchange);
+        }
+
+        // 3. JWT required for all other endpoints
+        String authHeader = request.getHeaders().getFirst(JwtConstant.JWT_HEADER);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             logger.debug("Missing or malformed Authorization header for path: {}", path);
             return unauthorized(exchange);
@@ -40,24 +49,18 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
         try {
             String token = authHeader.substring(7).trim();
             SecretKey secretKey = Keys.hmacShaKeyFor(JwtConstant.SECRET_KEY.getBytes());
-            // will throw JwtException on invalid/expired
             var jwt = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            var claims = jwt.getBody();
-            logger.debug("JWT validated for path={} ; claims={}", path, claims);
 
-            // propagate a trusted header with the user's email (if present)
-            String email = claims.get("email", String.class);
-            ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                    .header("X-User-Email", email == null ? "" : email)
+            String email = jwt.getBody().get("email", String.class);
+
+            ServerHttpRequest mutatedRequest = request.mutate()
+                    .header("X-User-Email", email != null ? email : "")
                     .build();
 
-            ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
-            return chain.filter(mutatedExchange);
-        } catch (JwtException e) {
-            logger.debug("JWT validation failed: {}", e.getMessage());
-            return unauthorized(exchange);
+            return chain.filter(exchange.mutate().request(mutatedRequest).build());
+
         } catch (Exception e) {
-            logger.error("Unexpected error while validating JWT", e);
+            logger.debug("JWT validation failed: {}", e.getMessage());
             return unauthorized(exchange);
         }
     }
@@ -70,7 +73,9 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        // run early
-        return Ordered.HIGHEST_PRECEDENCE;
+             // *** THE FIX IS HERE ***
+        // Set a low precedence value (e.g., 50). This ensures this filter runs AFTER 
+        // Spring Cloud Gateway's internal filters, including the CORS filter.
+        return 1000;
     }
 }

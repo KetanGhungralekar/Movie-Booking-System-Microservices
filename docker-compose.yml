@@ -235,7 +235,7 @@ services:
   # ✔ API Gateway (folder: api-gateway)
   api_gateway:
     build: ./api-gateway
-    container_name: api_gateway
+    container_name: api-gateway
     ports:
       - "8085:8085"
     depends_on:
