@@ -28,12 +28,11 @@ pipeline {
         script {
           def changed = sh(
             script: """
-              git fetch origin main
-              git diff --name-only origin/main...HEAD | grep '^api-gateway/' || true
+                git diff --name-only HEAD~1 HEAD | grep 'api-gateway/' || true
             """,
             returnStdout: true
-          ).trim()
-
+            ).trim()
+            
           if (changed == "") {
             echo "No changes detected in api-gateway. Skipping build."
             currentBuild.result = 'NOT_BUILT'
