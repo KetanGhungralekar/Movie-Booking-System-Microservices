@@ -13,7 +13,7 @@ pipeline {
 
   environment {
     SERVICE_NAME = 'api-gateway'
-    DOCKER_REPO = 'your-dockerhub-namespace'
+    DOCKER_REPO = 'transyltoonia'
 
     // IMPORTANT FOR macOS: Add Docker CLI to Jenkins PATH
     PATH = "/usr/local/bin:/opt/homebrew/bin:/Applications/Docker.app/Contents/Resources/bin:${env.PATH}"
