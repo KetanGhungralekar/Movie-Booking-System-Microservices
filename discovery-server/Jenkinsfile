@@ -11,7 +11,7 @@ pipeline {
   }
 
   environment {
-    SERVICE_NAME = 'booking-service'
+    SERVICE_NAME = 'discovery-server'
     DOCKER_REPO = 'transyltoonia'
 
     // macOS: Ensure Jenkins sees Docker CLI
