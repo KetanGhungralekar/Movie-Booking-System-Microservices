@@ -1,3 +1,4 @@
+// Jenkins declarative pipeline for movie-service
 pipeline {
   agent any
   options { timestamps() }
@@ -33,17 +34,17 @@ pipeline {
 
           def changed = sh(
             script: """
-              git diff --name-only HEAD~1 HEAD | grep 'booking-service/' || true
+              git diff --name-only HEAD~1 HEAD | grep "${SERVICE_NAME}/" || true
             """,
             returnStdout: true
           ).trim()
 
           if (changed == "") {
-            echo "No changes detected in booking-service. Skipping build."
+            echo "No changes detected in ${SERVICE_NAME}. Skipping build."
             currentBuild.result = 'NOT_BUILT'
-            error("Skipping build for booking-service")
+            error("Skipping build for ${SERVICE_NAME}")
           } else {
-            echo "Detected changes in booking-service:"
+            echo "Detected changes in ${SERVICE_NAME}:"
             echo changed
           }
         }
@@ -52,14 +53,14 @@ pipeline {
 
     stage('Build & Test') {
       steps {
-        dir('booking-service') {
+        dir("${SERVICE_NAME}") {
           sh 'chmod +x mvnw'
           sh './mvnw -B clean verify'
         }
       }
       post {
         always {
-          junit allowEmptyResults: true, testResults: 'booking-service/target/surefire-reports/*.xml'
+          junit allowEmptyResults: true, testResults: "${SERVICE_NAME}/target/surefire-reports/*.xml"
         }
       }
     }
@@ -70,7 +71,7 @@ pipeline {
           def imageTag = params.IMAGE_TAG ?: "main-${env.BUILD_NUMBER}"
           env.IMAGE_NAME = "${DOCKER_REPO}/${SERVICE_NAME}:${imageTag}"
         }
-        dir('booking-service') {
+        dir("${SERVICE_NAME}") {
           sh 'docker build -t "$IMAGE_NAME" .'
         }
       }
