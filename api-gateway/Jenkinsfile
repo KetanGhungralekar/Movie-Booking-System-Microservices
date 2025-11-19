@@ -28,7 +28,7 @@ pipeline {
         script {
           def changed = sh(
             script: """
-              git fetch origin ${env.BRANCH_NAME}
+              git fetch origin main
               git diff --name-only origin/main...HEAD | grep '^api-gateway/' || true
             """,
             returnStdout: true
