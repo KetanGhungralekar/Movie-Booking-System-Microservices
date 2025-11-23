@@ -190,6 +190,7 @@ public class BookingService {
             dto.setStatus(booking.getStatus().toString());
             dto.setTotalAmount(booking.getTotalAmount());
             dto.setPaymentId(booking.getPaymentId());
+            dto.setCreatedAt(booking.getCreatedAt());
 
             dto.setSeats(
                 booking.getSeats().stream().map(seat -> {
