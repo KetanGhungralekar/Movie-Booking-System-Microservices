@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: movie-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: user-service:latest     # local Minikube image
+          imagePullPolicy: Never         # IMPORTANT
+          ports:
+            - containerPort: 8083
+          env:
+            # Activate docker profile
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+
+            # DB configs
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://user-db:5432/user_db"
+
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "user_user"
+
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "user_pass"
+
+            # Eureka
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://eureka:8761/eureka/"
+
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "true"
+
+            # RabbitMQ (default guest/guest or root/root depending)
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbitmq"
+
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+
+            - name: SPRING_RABBITMQ_USERNAME
+              value: "root"
+
+            - name: SPRING_RABBITMQ_PASSWORD
+              value: "root"
+
+            # Redis
+            - name: SPRING_REDIS_HOST
+              value: "redis"
+
+            - name: SPRING_REDIS_PORT
+              value: "6379"

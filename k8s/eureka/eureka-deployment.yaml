@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eureka
+  namespace: movie-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eureka
+  template:
+    metadata:
+      labels:
+        app: eureka
+    spec:
+      containers:
+        - name: eureka
+          image: spe_project-eureka:latest       # <-- Using your local image
+          imagePullPolicy: Never                 # <-- VERY IMPORTANT
+          ports:
+            - containerPort: 8761
+          env:
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: "eureka"
+            - name: EUREKA_CLIENT_REGISTER_WITH_EUREKA
+              value: "false"
+            - name: EUREKA_CLIENT_FETCH_REGISTRY
+              value: "false"
+            - name: SERVER_PORT
+              value: "8761"
