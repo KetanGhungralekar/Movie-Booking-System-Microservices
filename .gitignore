@@ -1,15 +1,19 @@
-### Maven ###
+### MAVEN ###
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### SPRING BOOT ###
+*.jar
+*.war
 
 ### STS ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 
@@ -19,15 +23,52 @@ target/
 *.iml
 *.ipr
 
-### VS Code ###
+### VS CODE ###
 .vscode/
 
-### Logs ###
+### LOG FILES ###
 *.log
+logs/
+*.out
 
-### OS ###
+### OS FILES ###
 .DS_Store
 Thumbs.db
 
-### Windows Zone.Identifier ###
+### WINDOWS Zone.Identifier ###
 *.Zone.Identifier
+
+### KUBERNETES ###
+*.yaml~
+*.yml~
+# Helm charts (if you use them later)
+charts/
+# Kube config dumps
+kubeconfig*
+
+### DOCKER ###
+*.pid
+*.seed
+docker-compose.override.yml
+# Ignore large images accidentally downloaded into repo
+*.tar
+*.tar.gz
+
+### MINIKUBE ###
+minikube-linux-amd64
+minikube*
+*.iso
+
+### NODE / REACT (for frontend if present) ###
+node_modules/
+dist/
+build/
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+### BACKUP FILES ###
+*.bak
+*.tmp
