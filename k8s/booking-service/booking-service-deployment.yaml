@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: booking-service
-          image: booking-service:latest
-          imagePullPolicy: Never
+          image: ketan803/booking-service:main-1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8087
           resources:
