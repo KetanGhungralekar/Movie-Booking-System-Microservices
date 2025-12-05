@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: movie-service
-          image: movie-service:latest      # Local image for Minikube
-          imagePullPolicy: Never
+          image: ketan803/movie-service:main-1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
           resources:
