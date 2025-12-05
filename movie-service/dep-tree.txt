@@ -24,3 +24,4 @@ com.movietime:movie-service:jar:0.0.1-SNAPSHOT
    +- org.springframework:spring-core:jar:6.2.12:compile
    |  \- org.springframework:spring-jcl:jar:6.2.12:compile
    \- org.springframework:spring-test:jar:6.2.12:test
+fr
