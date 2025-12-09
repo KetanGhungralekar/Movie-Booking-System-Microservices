@@ -22,3 +22,10 @@ spec:
           envFrom:
             - secretRef:
                 name: rabbitmq-secret
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 400m
+              memory: 512Mi
