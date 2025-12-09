@@ -75,6 +75,5 @@ yarn-error.log*
 
 ngrok-v3-stable-linux-amd64.tgz
 
-docker-compose.yml
-api-gateway/src/main/resources/logback-spring.xml
-elk/
+k8s/elk-namespace.yaml
+k8s/elk
