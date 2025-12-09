@@ -1,78 +1,117 @@
 pipeline {
     agent any
 
-    triggers {
-        // REQUIRED so GitHub webhook triggers this job
-        githubPush()
-    }
+    triggers { githubPush() }   // Webhook
 
     stages {
-
         stage('Checkout') {
             steps {
-                // This binds the repo to the webhook — REQUIRED for trigger to work
                 checkout scm
             }
         }
 
-        stage("Detect Changed Service") {
+        stage('Detect Changes') {
             steps {
                 script {
-                    echo "Detecting changed folders..."
-
-                    // Get changed files between last commit and current
                     def changedFiles = sh(
                         script: "git diff --name-only HEAD~1 HEAD || true",
                         returnStdout: true
                     ).trim().split("\n")
 
-                    echo "Changed files: ${changedFiles}"
+                    echo "Changed files:\n${changedFiles}"
 
-                    // Map folder -> Jenkins job name
+                    // Map folder → Jenkins job names
                     def serviceMap = [
-                        "user-service": "User-Service-Pipeline",
-                        "movie-service": "Movie-Service-Pipeline",
-                        "booking-service": "Booking-Service-Pipeline",
-                        "payment-service": "Payment-Service-Pipeline",
-                        "notification-service": "Notification-Service-Pipeline",
-                        "api-gateway": "api-gateway-pipeline"
+                        "api-gateway"       : "api-gateway-pipeline",
+                        "user-service"      : "User-Service-Pipeline",
+                        "movie-service"     : "movie-service-pipeline",
+                        "booking-service"   : "booking-service-pipeline",
+                        "payment-service"   : "Payment-Service-Pipeline",
+                        "notification-service" : "Notification-Service-Pipeline"
                     ]
 
-                    env.TARGET_JOB = ""
+                    def infraFolders = ["redis", "rabbitmq", "elk", "ingress", "user-db", "movie-db", "booking-db","user-db-using-zalando"]
 
-                    // Check which service folder changed
+                    env.MICROSERVICES_TO_BUILD = ""
+                    env.INFRA_CHANGED = "false"
+
+                    // Detect changed folders
                     changedFiles.each { file ->
-                        serviceMap.each { folder, jobName ->
+                        serviceMap.each { folder, job ->
                             if (file.startsWith(folder + "/")) {
-                                env.TARGET_JOB = jobName
+                                env.MICROSERVICES_TO_BUILD =
+                                    env.MICROSERVICES_TO_BUILD ?
+                                        env.MICROSERVICES_TO_BUILD + "," + job :
+                                        job
+                            }
+                        }
+                        infraFolders.each { folder ->
+                            if (file.startsWith(folder + "/")) {
+                                env.INFRA_CHANGED = "true"
                             }
                         }
                     }
 
-                    if (!env.TARGET_JOB) {
-                        echo "No microservice changes detected. Skipping."
-                        currentBuild.result = 'SUCCESS'
-                        // Stop pipeline here
-                        error("NO_CHANGES")
-                    }
-
-                    echo "Detected service change → triggering job: ${env.TARGET_JOB}"
+                    echo "Microservices to build: ${env.MICROSERVICES_TO_BUILD}"
+                    echo "Infra changed: ${env.INFRA_CHANGED}"
                 }
             }
         }
 
-        stage("Trigger Microservice Pipeline") {
+        stage('Apply Infra Changes') {
+            when { expression { env.INFRA_CHANGED == "true" } }
             steps {
                 script {
-                    build job: env.TARGET_JOB, wait: true
+                    echo "Applying infrastructure updates..."
+
+                    sh """
+                        kubectl apply -f redis/
+                        kubectl apply -f rabbitmq/
+                        kubectl apply -f elk/
+                        kubectl apply -f ingress/
+                        kubectl apply -f user-db/
+                        kubectl apply -f movie-db/
+                        kubectl apply -f booking-db/
+                        kubectl apply -f user-db-using-zalando/
+                    """
+
+                    echo "Infra updated successfully"
                 }
+            }
+        }
+
+        stage('Build Microservices in Parallel') {
+            when { expression { env.MICROSERVICES_TO_BUILD?.trim() } }
+            steps {
+                script {
+                    def jobs = env.MICROSERVICES_TO_BUILD.split(",")
+                    def parallelBuilds = [:]
+
+                    jobs.each { jobName ->
+                        parallelBuilds[jobName] = {
+                            build job: jobName, wait: true
+                        }
+                    }
+
+                    parallel parallelBuilds
+                }
+            }
+        }
+
+        stage("Nothing Changed") {
+            when {
+                expression {
+                    !env.MICROSERVICES_TO_BUILD?.trim() && env.INFRA_CHANGED == "false"
+                }
+            }
+            steps {
+                echo "No changes detected. Pipeline exiting."
             }
         }
     }
 
     post {
-        success {
-            echo "Orchestrator complete."
-        }
+        success { echo "Master build complete." }
+        failure { echo "Some component failed." }
     }
 }
