@@ -18,7 +18,8 @@ spec:
           image: ketan803/movie-service:main-1
           imagePullPolicy: Always
           ports:
-            - containerPort: 8081
+          - containerPort: 8086
+
           resources:
             requests:
               cpu: 400m
