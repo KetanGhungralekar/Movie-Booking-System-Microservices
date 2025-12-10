@@ -2,7 +2,7 @@
 
 ---
 
-```markdown
+
 # 🎬 MovieTime – Backend Microservices Platform  
 **A Cloud-Native, Production-Ready Distributed System**
 
@@ -127,7 +127,7 @@ All services communicate using:
 
 ## 🗂 Repository Structure
 
-```
+
 
 movie-time-backend/
 │
@@ -164,7 +164,7 @@ movie-time-backend/
 │
 └── README.md
 
-````
+
 
 ---
 
