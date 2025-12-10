@@ -35,7 +35,9 @@ import com.movietime.booking_service.Response.SeatStatusResponse;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingService {
@@ -178,6 +180,7 @@ public class BookingService {
             redisTemplate.delete(key);
         }
         publishBookingConfirmed(booking);
+        log.info("BOOKING_CONFIRMED | bookingId={} | userId={} | showId={}", booking.getId(), booking.getUserId(), booking.getShowId());
         return BookingResponse.builder()
             .id(booking.getId())
             .showId(booking.getShowId())

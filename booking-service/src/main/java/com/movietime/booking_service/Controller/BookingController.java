@@ -21,20 +21,26 @@ import com.movietime.booking_service.Response.BookingResponseDTO;
 import com.movietime.booking_service.Response.SeatStatusResponse;
 import com.movietime.booking_service.Service.BookingService;
 
+import lombok.extern.slf4j.Slf4j;
+
+
 @RestController
 @RequestMapping("/bookings")
+@Slf4j
 public class BookingController {
     @Autowired
     private BookingService bookingService;
     @PostMapping("/create")
     public ResponseEntity<BookingResponse> createBooking(@RequestHeader("X-User-Email") String userEmail,@RequestBody CreateBookingRequest req) {
         BookingResponse booking = bookingService.createBooking(req, userEmail);
+        log.info("BOOKING_STARTED | bookingId={} | userId={} | showId={}", booking.getId(), userEmail, req.getShowId());
         return ResponseEntity.ok(booking);
     }
     @PostMapping("/confirm/{bookingId}")
     public ResponseEntity<BookingResponse> confirmBooking(
             @PathVariable Long bookingId,
             @RequestParam String paymentId) {
+        
         return ResponseEntity.ok(bookingService.confirmPayment(bookingId, paymentId));
     }
     @GetMapping("/show/{showId}/seats/status")

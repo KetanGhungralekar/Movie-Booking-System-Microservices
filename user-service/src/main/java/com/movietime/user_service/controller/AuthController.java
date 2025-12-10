@@ -25,6 +25,9 @@ import com.movietime.user_service.Request.LoginRequest;
 import com.movietime.user_service.Response.AuthResponse;
 import com.movietime.user_service.Service.CustomUserDetailService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -77,7 +80,7 @@ public class AuthController {
         response.setToken(jwt);
         response.setRole(savedUser.getRole());
         response.setMessage("Signup successful");
-
+        log.info("USER_REGISTERED | userId={} | email={}", savedUser.getId(), savedUser.getEmail());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
