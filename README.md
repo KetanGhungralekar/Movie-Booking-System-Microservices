@@ -17,19 +17,19 @@
 
 ---
 
-## ✨ Overview
+## Overview
 
-**MovieTime Backend** is a **fully containerized, microservices-based backend platform** for an online movie ticket booking system. It is built using **Spring Boot**, orchestrated using **Kubernetes**, automated via **Jenkins CI/CD**, and monitored through the **ELK Stack**.
+MovieTime Backend is a fully containerized, microservices-based backend platform for an online movie ticket booking system. It is built using Spring Boot, orchestrated with Kubernetes, automated through Jenkins CI/CD, and monitored using the ELK Stack.
 
-This repository contains:
+This repository includes:
 
-✅ All backend microservices  
-✅ Docker & Docker Compose  
-✅ Kubernetes manifests  
-✅ Jenkins CI/CD pipelines  
-✅ RabbitMQ & Redis  
-✅ PostgreSQL databases  
-✅ Centralized logging with ELK  
+- All backend microservices  
+- Docker and Docker Compose configurations  
+- Kubernetes manifests  
+- Jenkins CI/CD pipelines  
+- RabbitMQ and Redis setup  
+- PostgreSQL databases  
+- Centralized logging with ELK  
 
 🚫 Frontend is intentionally excluded.
 
