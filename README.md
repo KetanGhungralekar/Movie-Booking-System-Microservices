@@ -395,7 +395,6 @@ Each service supports:
 
 ## 🧭 Future Enhancements
 
-* Horizontal Pod Autoscaling (HPA)
 * Prometheus & Grafana monitoring
 * Distributed tracing with Jaeger
 * OAuth2 authentication
