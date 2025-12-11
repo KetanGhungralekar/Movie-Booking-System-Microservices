@@ -84,8 +84,8 @@ The backend follows a **cloud-native microservices architecture** with the follo
 - **DevOps Layer** – Docker, Kubernetes, Jenkins  
 
 All services communicate using:
-- ✅ **REST APIs** (synchronous)
-- ✅ **RabbitMQ events** (asynchronous)
+- **REST APIs** (synchronous)
+- **RabbitMQ events** (asynchronous)
 
 ---
 
@@ -170,7 +170,7 @@ movie-time-backend/
 
 ## 🐳 Local Setup with Docker
 
-### ✅ Prerequisites
+### Prerequisites
 - Docker
 - Docker Compose
 
@@ -235,7 +235,7 @@ kubectl apply -f k8s/ingress/
 
 Each microservice has its **own Jenkins pipeline**:
 
-### ✅ Pipeline Stages
+### Pipeline Stages
 
 1. Source Code Checkout
 2. Change Detection
