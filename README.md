@@ -127,6 +127,7 @@ All services communicate using:
 
 ## 🗂 Repository Structure
 
+```
 movie-time-backend/
 │
 ├── api-gateway/
@@ -161,6 +162,7 @@ movie-time-backend/
 │   └── Jenkinsfiles/
 │
 └── README.md
+```
 
 
 
