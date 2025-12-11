@@ -263,9 +263,9 @@ RabbitMQ enables **event-driven communication**:
 | Booking Service | Booking Confirmed | Notification Service |
 | Payment Service | Payment Success   | Booking Service      |
 
-✅ Loose coupling
-✅ Asynchronous processing
-✅ Reliable delivery
+Loose coupling
+Asynchronous processing
+Reliable delivery
 
 ---
 
