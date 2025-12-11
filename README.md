@@ -403,7 +403,7 @@ Each service supports:
 * GitOps with ArgoCD
 
 ---
-## Conclusion
+## 🎯📘 Conclusion
 
 This project demonstrates the successful development of a cloud-native backend system using a microservices architecture. By integrating Spring Boot services with Docker, Kubernetes, Jenkins-based CI/CD, RabbitMQ, Redis, and the ELK stack, the platform achieves modularity, scalability, and reliable operations.
 
