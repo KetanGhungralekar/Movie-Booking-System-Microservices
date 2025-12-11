@@ -127,8 +127,6 @@ All services communicate using:
 
 ## 🗂 Repository Structure
 
-
-
 movie-time-backend/
 │
 ├── api-gateway/
@@ -152,7 +150,7 @@ movie-time-backend/
 │   ├── databases/
 │   ├── rabbitmq/
 │   ├── redis/
-│   ├── ingress/
+│   └── ingress/
 │
 ├── elk/
 │   ├── filebeat.yml
@@ -163,6 +161,7 @@ movie-time-backend/
 │   └── Jenkinsfiles/
 │
 └── README.md
+
 
 
 
